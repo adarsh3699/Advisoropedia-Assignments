@@ -12,8 +12,8 @@ app.get('/', (req, res) => {
 
 // normal-auth
 app.post('/signin', async (req, res) => {
-	const email = req.body.email ? req.body.email.trim() : req.body.email;
-	const password = req.body.password ? req.body.password.trim() : req.body.password;
+	const email = req.body.email?.trim();
+	const password = req.body.password?.trim();
 
 	if (!email || !password) return res.status(400).json({ statusCode: 400, msg: 'Invalid field!' });
 	try {
@@ -57,7 +57,7 @@ app.post('/signin', async (req, res) => {
 
 // google-auth
 app.post('/signin/google', async (req, res) => {
-	const googleAccessToken = req.body.googleAccessToken;
+	const googleAccessToken = req.body?.googleAccessToken;
 	const createdOn = new Date(Date.now());
 
 	try {
@@ -193,24 +193,26 @@ app.post('/signup', async (req, res) => {
 	}
 });
 
-app.post('/forget_password', function (req, res) {
-	const email = req.body.email ? req.body.email.trim() : req.body.email;
+app.post('/forget_password', async function (req, res) {
+	const email = req.body.email?.trim();
 	try {
-		if (email) {
-			let toSend = {};
-			const otp = Math.floor(1000 + Math.random() * 9000);
+		if (!email) res.status(400).json({ statusCode: 400, msg: 'Please Enter Your Email' });
+		const existingUser = await User.findOne({ email });
 
-			sendMail(email, 'Forgot Password', 'Your OTP is', otp);
-			toSend.statusCode = 200;
-			toSend.msg = 'OTP sent successfully';
-			toSend.otp = encryptText(otp + '');
-
-			res.status(toSend.statusCode);
-			res.send(toSend);
-		} else {
-			res.status(400);
-			res.send({ statusCode: 400, msg: 'Please Enter Your Email' });
+		if (!existingUser) {
+			return res.status(404).json({ statusCode: 404, msg: "User don't exist!" });
 		}
+		let toSend = {};
+		const otp = Math.floor(1000 + Math.random() * 9000);
+
+		sendMail(email, 'Forgot Password', 'Your OTP is', otp);
+
+		toSend.statusCode = 200;
+		toSend.msg = 'OTP sent successfully';
+		toSend.otp = encryptText(otp + '');
+
+		res.status(toSend.statusCode);
+		res.send(toSend);
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({ statusCode: 500, msg: 'Something went wrong!' });
@@ -218,30 +220,27 @@ app.post('/forget_password', function (req, res) {
 });
 
 app.post('/change_password', async function (req, res) {
-	const email = req.body.email ? req.body.email.trim() : req.body.email;
-	const password = req.body.password ? req.body.password.trim() : req.body.password;
-	const otp = req.body.otp ? req.body.otp.trim() : req.body.otp;
+	const email = req.body.email?.trim();
+	const password = req.body.password?.trim();
+	const otp = req.body.otp?.trim();
 	const encryptedOtp = decryptText(req.body.encryptedOtp);
 
 	try {
 		if (email && req.body.password && otp && req.body.encryptedOtp) {
-			if (otp == encryptedOtp) {
-				const encryptedPassword = md5Hash(password);
+			if (otp !== encryptedOtp) res.status(400).json({ statusCode: 400, msg: 'OTP do not match' });
 
-				const queryResp = await User.updateOne(
-					{ email },
-					{ $set: { password: encryptedPassword, linkWithPassword: true } }
-				);
+			const encryptedPassword = md5Hash(password);
 
-				let toSend = {};
-				toSend.statusCode = 200;
-				toSend.msg = 'Password updated successfully';
-				res.status(toSend.statusCode);
-				res.send(toSend);
-			} else {
-				res.status(400);
-				res.send({ statusCode: 400, msg: 'OTP do not match' });
-			}
+			const queryResp = await User.updateOne(
+				{ email },
+				{ $set: { password: encryptedPassword, linkWithPassword: true } }
+			);
+
+			let toSend = {};
+			toSend.statusCode = 200;
+			toSend.msg = 'Password updated successfully';
+			res.status(toSend.statusCode);
+			res.send(toSend);
 		} else {
 			res.status(400);
 			res.send({ statusCode: 400, msg: 'Please provide all details' });

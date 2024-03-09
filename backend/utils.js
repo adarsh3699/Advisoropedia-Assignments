@@ -35,25 +35,6 @@ function createTokens(payload) {
 	}
 }
 
-function signLoginInfoToken(verified, linkWithGoogle, linkWithPassword) {
-	try {
-		const payload = {
-			verified: verified,
-			linkWithGoogle: linkWithGoogle,
-			linkWithPassword: linkWithPassword,
-		};
-		const options = {
-			expiresIn: '240h',
-		};
-
-		const token = JWT.sign(payload, JWT_SECRET, options);
-		return token;
-	} catch (err) {
-		console.log(err);
-		return createError.InternalServerError().message;
-	}
-}
-
 function verifyAccessToken(req) {
 	try {
 		if (!req?.headers?.authorization) return { authorization: false, message: 'Please provide Token' };
@@ -61,25 +42,6 @@ function verifyAccessToken(req) {
 		const authHeader = req.headers['authorization'];
 		const bearerToken = authHeader.split(' ');
 		const token = bearerToken[1];
-
-		const isTokenValid = JWT.verify(token, JWT_SECRET, (err, payload) => {
-			if (err) {
-				const message = err.name === 'JsonWebTokenError' ? 'Unauthorized' : err.message;
-				return { authorization: false, message };
-			}
-
-			return { authorization: true, payload };
-		});
-		return isTokenValid;
-	} catch (err) {
-		console.log(err);
-		return { authorization: false, message: 'Internal server error' };
-	}
-}
-
-function verifyLoginInfoToken(token) {
-	try {
-		if (!token) return { authorization: false, message: 'Please provide Token' };
 
 		const isTokenValid = JWT.verify(token, JWT_SECRET, (err, payload) => {
 			if (err) {
@@ -157,7 +119,7 @@ async function sendMail(mailTo, mailSubject, title, object) {
 
 		const result = await transport.sendMail(mailOptions);
 
-		console.log('Email sent...', result);
+		console.log('sendMail...', result);
 		return result;
 	} catch (err) {
 		console.log('Fail to send mail ', err);
@@ -173,6 +135,4 @@ module.exports = {
 	sendMail,
 	createTokens,
 	verifyAccessToken,
-	signLoginInfoToken,
-	verifyLoginInfoToken,
 };
