@@ -9,12 +9,7 @@ const home = require('./routes/home');
 
 const app = express();
 
-const allowlist = [
-	'https://comparison.bhemu.me/',
-	'http://localhost:3000/',
-	'http://localhost:3001/',
-	'https://price-comparison-web.vercel.app/',
-];
+const allowlist = ['http://localhost:3000/', 'http://localhost:3001/', 'https://advisoropedia-assignments.vercel.app/'];
 
 app.use(cors(allowlist));
 app.use(bodyParser.json()); // Parse JSON bodies
