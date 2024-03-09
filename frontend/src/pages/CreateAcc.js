@@ -6,8 +6,6 @@ import Loader from '../components/Loader';
 
 // import '../styles/loginPage.css';
 
-document.title = 'Bhemu Notes | Create Your Account';
-
 function CreateAcc() {
 	const [msg, setMsg] = useState('');
 	const [isApiLoading, setIsApiLoading] = useState(false);

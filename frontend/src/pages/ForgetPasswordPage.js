@@ -6,8 +6,6 @@ import Loader from '../components/Loader';
 
 // import '../styles/loginPage.css';
 
-document.title = 'Bhemu Notes | Forget Password';
-
 function ForgetPasswordPage() {
 	const [emailVal, setEmailValsg] = useState('');
 	const [encryptedOtp, setEncryptedOtp] = useState('');
