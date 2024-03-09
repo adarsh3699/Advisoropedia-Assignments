@@ -1,0 +1,54 @@
+#googleBtn {
+	display: flex;
+	align-items: center;
+	width: 320px;
+	margin: 10px auto;
+	padding: 0;
+	background-color: rgb(9, 67, 162);
+	color: rgb(232, 230, 227);
+	border: 1px solid transparent;
+	user-select: none;
+	cursor: pointer;
+}
+
+#disabledGoogleBtn {
+	display: flex;
+	align-items: center;
+	width: 320px;
+	margin: auto;
+	padding: 0;
+	background-color: rgb(96 108 128);
+	color: rgb(232, 230, 227);
+	border: 1px solid transparent;
+	user-select: none;
+}
+
+#googleBtn:hover {
+	transition-duration: 0.2s;
+	box-shadow: 0px 0px 10px 0px rgba(4, 50, 170, 0.7);
+	background-color: rgb(16, 83, 190);
+}
+
+#googleLogo {
+	padding: 15px;
+	background-color: rgb(20, 20, 20);
+}
+
+#googleBtnName {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+@media screen and (max-width: 475px) {
+	#googleBtn {
+		width: 250px;
+	}
+
+	#disabledGoogleBtn {
+		width: 250px;
+	}
+}
